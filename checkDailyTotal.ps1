@@ -43,6 +43,10 @@ foreach($line in $csv)
         }
     }
 }
+$working_time = $elapsed_time - $lunch_break_time
+$formatted_working_time = $working_time.ToString('hh\:mm');
+$formatted_office_time = $elapsed_time.ToString('hh\:mm');
+
 if($run_notification)
 {
     Add-Type -AssemblyName System.Windows.Forms
@@ -59,8 +63,5 @@ if($run_notification)
 else
 {
     Write-Host ("Time at the office",$elapsed_time.hours,$elapsed_time.Minutes ) -Separator ":" -ForegroundColor Blue -BackgroundColor White
-    $working_time = $elapsed_time - $lunch_break_time
-    $formatted_working_time = $working_time.ToString('hh\:mm');
-    $formatted_office_time = $elapsed_time.ToString('hh\:mm');
     Write-Host ("Time actually working:", $formatted_working_time ) -Separator " " -ForegroundColor Red -BackgroundColor White
 }
