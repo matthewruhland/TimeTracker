@@ -8,6 +8,7 @@ It also calculates the time worked with lunch break removed from the total.
 
 ### To do:  
 - Create Powershell script to add tasks to task scheduler  
+- Get `logtime.cmd` to create csv file and add headers automatically  
 
 
 ### References used:  
