@@ -43,7 +43,13 @@ foreach($line in $csv)
         }
     }
 }
-$working_time = $elapsed_time - $lunch_break_time
+if($found_lock_time)
+{
+    $working_time = $elapsed_time - $lunch_break_time
+}
+else{
+    $working_time = $elapsed_time
+}
 $formatted_working_time = $working_time.ToString('hh\:mm');
 $formatted_office_time = $elapsed_time.ToString('hh\:mm');
 
@@ -55,13 +61,25 @@ if($run_notification)
     $balmsg.Icon = ".\images\clock.ico"
     # $balmsg.Icon = [System.Drawing.Icon]::ExtractAssociatedIcon($path)
     # $balmsg.BalloonTipIcon = [System.Windows.Forms.ToolTipIcon]::Warning
-    $balmsg.BalloonTipText = "You've been working for $formatted_working_time, You've been in the office for $formatted_office_time"
+    if($found_lock_time)
+    {
+        $balmsg.BalloonTipText = "You've been working for $formatted_working_time, You've been in the office for $formatted_office_time"
+    }
+    else{
+        $balmsg.BalloonTipText = "You've been working (with no breaks) for $formatted_office_time"
+    }
     $balmsg.BalloonTipTitle = "TimeTracker"
     $balmsg.Visible = $true
     $balmsg.ShowBalloonTip(20000)
 }
 else
 {
-    Write-Host ("Time at the office",$elapsed_time.hours,$elapsed_time.Minutes ) -Separator ":" -ForegroundColor Blue -BackgroundColor White
-    Write-Host ("Time actually working:", $formatted_working_time ) -Separator " " -ForegroundColor Red -BackgroundColor White
+    if($found_lock_time)
+    {
+        Write-Host ("Time at the office",$elapsed_time.hours,$elapsed_time.Minutes ) -Separator ":" -ForegroundColor Blue -BackgroundColor White
+        Write-Host ("Time actually working:", $formatted_working_time ) -Separator " " -ForegroundColor Red -BackgroundColor White
+    }
+    else{
+        Write-Host ("Time working, (no breaks)",$elapsed_time.hours,$elapsed_time.Minutes ) -Separator ":" -ForegroundColor Blue -BackgroundColor White
+    }
 }
