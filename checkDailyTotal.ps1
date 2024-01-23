@@ -14,6 +14,7 @@ $csv = Import-Csv -Header Date,User,Type,Time -path $path
 
 $found_start_time = [bool]0
 $found_lock_time = [bool]0
+$found_lunch_break = [bool]0
 foreach($line in $csv)
 { 
     if(($line.Date -eq $date) -and (!$found_start_time))
@@ -39,12 +40,12 @@ foreach($line in $csv)
             {
                 $lunch_break_time = $break_time
                 if($debug_prints) { Write-Host ("Possible Lunch Break Found",$lunch_break_time.Minutes) -Separator ":" -ForegroundColor Blue -BackgroundColor White }
-                $found_lock_time = [bool]1
+                $found_lunch_break = [bool]1
             }
         }
     }
 }
-if($found_lock_time)
+if($found_lunch_break)
 {
     $working_time = $elapsed_time - $lunch_break_time
 }
@@ -62,7 +63,7 @@ if($run_notification)
     $balmsg.Icon = ".\images\clock.ico"
     # $balmsg.Icon = [System.Drawing.Icon]::ExtractAssociatedIcon($path)
     # $balmsg.BalloonTipIcon = [System.Windows.Forms.ToolTipIcon]::Warning
-    if($found_lock_time)
+    if($found_lunch_break)
     {
         $balmsg.BalloonTipText = "You've been working for $formatted_working_time, You've been in the office for $formatted_office_time"
     }
@@ -75,7 +76,7 @@ if($run_notification)
 }
 else
 {
-    if($found_lock_time)
+    if($found_lunch_break)
     {
         Write-Host ("Time at the office",$elapsed_time.hours,$elapsed_time.Minutes ) -Separator ":" -ForegroundColor Blue -BackgroundColor White
         Write-Host ("Time actually working:", $formatted_working_time ) -Separator " " -ForegroundColor Red -BackgroundColor White
