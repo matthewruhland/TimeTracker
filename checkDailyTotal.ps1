@@ -39,6 +39,7 @@ foreach($line in $csv)
             {
                 $lunch_break_time = $break_time
                 if($debug_prints) { Write-Host ("Possible Lunch Break Found",$lunch_break_time.Minutes) -Separator ":" -ForegroundColor Blue -BackgroundColor White }
+                $found_lock_time = [bool]1
             }
         }
     }
