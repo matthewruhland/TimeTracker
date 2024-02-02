@@ -36,7 +36,7 @@ foreach($line in $csv)
         $found_lock_time = [bool]0
         if($locked_time -ge $lunch_hour_min -and $locked_time -le $lunch_hour_max )
         {
-            if($break_time.Minutes -ge $lunch_break_minimum)
+            if($break_time.TotalMinutes -ge $lunch_break_minimum)
             {
                 $lunch_break_time = $break_time
                 if($debug_prints) { Write-Host ("Possible Lunch Break Found",$lunch_break_time.Minutes) -Separator ":" -ForegroundColor Blue -BackgroundColor White }
