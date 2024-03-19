@@ -20,6 +20,7 @@ foreach($line in $csv)
     if(($line.Date -eq $date) -and (!$found_start_time))
     {
         $elapsed_time = [datetime]$current_time - [datetime]$line.Time
+        $into_office_time = [datetime]$line.Time
         $found_start_time = [bool]1
         # Only take the first instance of time (Start of the work day)
     }
@@ -54,6 +55,8 @@ else{
 }
 $formatted_working_time = $working_time.ToString('hh\:mm');
 $formatted_office_time = $elapsed_time.ToString('hh\:mm');
+$formatted_into_office_time = $into_office_time.ToString('hh\:mm tt');
+$formatted_break_time = $lunch_break_time.ToString('h\:m');
 
 if($run_notification)
 {
@@ -65,10 +68,10 @@ if($run_notification)
     # $balmsg.BalloonTipIcon = [System.Windows.Forms.ToolTipIcon]::Warning
     if($found_lunch_break)
     {
-        $balmsg.BalloonTipText = "You've been working for $formatted_working_time, You've been in the office for $formatted_office_time"
+        $balmsg.BalloonTipText = "You got into the office at $formatted_into_office_time. You've been working for $formatted_working_time, with a $formatted_break_time" + "m long break. You've been in the office for $formatted_office_time"
     }
     else{
-        $balmsg.BalloonTipText = "You've been working (with no breaks) for $formatted_office_time"
+        $balmsg.BalloonTipText = "You got into the office at $formatted_into_office_time. You've been working (with no breaks) for $formatted_office_time"
     }
     $balmsg.BalloonTipTitle = "TimeTracker"
     $balmsg.Visible = $true
