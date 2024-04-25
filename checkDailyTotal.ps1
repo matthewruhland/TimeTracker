@@ -2,6 +2,8 @@
 $lunch_hour_min = Get-Date '10:25' # This assumes you won't take lunch before 10:25 am
 $lunch_hour_max = Get-Date '13:30' # This assumes you won't take lunch after 1:30 pm
 $lunch_break_minimum = '25' # This assumes you won't take a lunch break shorter than 25 minutes
+$from_door_to_desk = '0:5' # How long it takes to walk into work, sit down and unlock the computer.
+                            # This is/should be considered company paid time. Set to 0:0 to disable.
 $run_notification = [bool]1 # Setting this to 1 will send a windows notification, setting to 0 will print to the command line
 # End Config
 
@@ -46,17 +48,22 @@ foreach($line in $csv)
         }
     }
 }
+
 if($found_lunch_break)
 {
-    $working_time = $elapsed_time - $lunch_break_time
+    $working_time = $elapsed_time - $lunch_break_time + [timespan]$from_door_to_desk
+    $end_time = $into_office_time.AddHours(8) + $lunch_break_time - [timespan]$from_door_to_desk
 }
 else{
-    $working_time = $elapsed_time
+    $working_time = $elapsed_time + [timespan]$from_door_to_desk
+    $end_time = $into_office_time.AddHours(8) - [timespan]$from_door_to_desk
 }
+$working_time = $working_time
 $formatted_working_time = $working_time.ToString('hh\:mm');
 $formatted_office_time = $elapsed_time.ToString('hh\:mm');
 $formatted_into_office_time = $into_office_time.ToString('hh\:mm tt');
-$formatted_break_time = $lunch_break_time.ToString('h\:m');
+$formatted_break_time = $lunch_break_time.ToString('h\:mm');
+$formatted_leave_time = $end_time.ToString('h\:mm tt');
 
 if($run_notification)
 {
@@ -68,10 +75,17 @@ if($run_notification)
     # $balmsg.BalloonTipIcon = [System.Windows.Forms.ToolTipIcon]::Warning
     if($found_lunch_break)
     {
-        $balmsg.BalloonTipText = "You got into the office at $formatted_into_office_time. You've been working for $formatted_working_time, with a $formatted_break_time" + "m long break. You've been in the office for $formatted_office_time"
+        $balmsg.BalloonTipText = 
+        "You got into the office at $formatted_into_office_time.`n"+
+        "You've been working for $formatted_working_time, with a $formatted_break_time" + "m long break. " +
+        "You've been in the office for $formatted_office_time.`n" +
+        "You can go home at: $formatted_leave_time."
     }
     else{
-        $balmsg.BalloonTipText = "You got into the office at $formatted_into_office_time. You've been working (with no breaks) for $formatted_office_time"
+        $balmsg.BalloonTipText = 
+        "You got into the office at $formatted_into_office_time.`n"+
+        "You've been working (with no breaks) for $formatted_office_time`n" +
+        "You can go home at: $formatted_leave_time.`n"
     }
     $balmsg.BalloonTipTitle = "TimeTracker"
     $balmsg.Visible = $true
