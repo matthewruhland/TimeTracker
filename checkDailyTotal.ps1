@@ -1,7 +1,7 @@
 # Config -- Edit Here 
 $lunch_hour_min = Get-Date '10:25' # This assumes you won't take lunch before 10:25 am
 $lunch_hour_max = Get-Date '13:30' # This assumes you won't take lunch after 1:30 pm
-$lunch_break_minimum = '25' # This assumes you won't take a lunch break shorter than 25 minutes
+$lunch_break_minimum = '20' # This assumes you won't take a lunch break shorter than 25 minutes
 $from_door_to_desk = '0:5' # How long it takes to walk into work, sit down and unlock the computer.
                             # This is/should be considered company paid time. Set to 0:0 to disable.
 $run_notification = [bool]1 # Setting this to 1 will send a windows notification, setting to 0 will print to the command line
@@ -19,19 +19,19 @@ $found_lock_time = [bool]0
 $found_lunch_break = [bool]0
 foreach($line in $csv)
 { 
-    if(($line.Date -eq $date) -and (!$found_start_time))
+    if(((get-date $line.Date) -eq (get-date $date)) -and (!$found_start_time))
     {
         $elapsed_time = [datetime]$current_time - [datetime]$line.Time
         $into_office_time = [datetime]$line.Time
         $found_start_time = [bool]1
         # Only take the first instance of time (Start of the work day)
     }
-    if(($line.Date -eq $date) -and ($line.Type -eq "Locked"))
+    if(((get-date $line.Date) -eq (get-date $date)) -and ($line.Type -eq "Locked"))
     {
         $locked_time = [datetime]$line.Time
         $found_lock_time = [bool]1
     }
-    if(($line.Date -eq $date) -and ($line.Type -eq "Unlocked") -and ($found_lock_time))
+    if(((get-date $line.Date) -eq (get-date $date)) -and ($line.Type -eq "Unlocked") -and ($found_lock_time))
     {
         $unlocked_time = [datetime]$line.Time
         $break_time = $unlocked_time - $locked_time
