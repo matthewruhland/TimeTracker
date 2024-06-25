@@ -31,7 +31,7 @@ foreach($line in $csv)
         $locked_time = [datetime]$line.Time
         $found_lock_time = [bool]1
     }
-    if(((get-date $line.Date) -eq (get-date $date)) -and ($line.Type -eq "Unlocked") -and ($found_lock_time))
+    if(((get-date $line.Date) -eq (get-date $date)) -and ($line.Type -eq "Unlocked" -or $line.Type -eq "Logged in") -and ($found_lock_time))
     {
         $unlocked_time = [datetime]$line.Time
         $break_time = $unlocked_time - $locked_time
